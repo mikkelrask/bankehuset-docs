@@ -1,0 +1,25 @@
+---
+title: 'Lav din egen fork af BANKEHUSET og klon den lokalt'
+---
+
+## Fork that
+Der er selvfølgeligt ingen der siger at du *skal* lave din egen fork, og alt efter hvordan og hvorledes du ender med at serve selve web-app'en er det heller ikke sikkert det er nødvendigt. Men mange guides herfra tager i at der eks. bliver deployet nye ændringer når der pushes til `production` og sådan noget lign. Køres projektet lokalt, kan du selvfølgeligt nøjes med at klone det.
+
+[Fork @mikkelrask/bankehuset-webapp](https://github.com/mikkelrask/bankehuset-webapp/fork)
+
+## A clone of a clone
+Når du har lavet din egen fork af web-app'en på Github skal vi have repo'et pull'ed/cloned lokalt
+
+Åben en terminal og gå til en passende mappe. Jeg har fx mine projekter i `~/Projekter`.
+Kør herefter følgende kommando
+
+```bash
+git clone https://github.com/DIT-GITHUB-BRUGERNAVN/bankehuset-webapp
+```
+bemærk her, at du skal udskifte `DIT-GITHUB-BRUGERNAVN` med dit faktisk Github brugernavn.
+
+Nu er der i din mappe en ny mappe med navnet `bankehuset-webapp`.
+```bash
+cd bankehuset-webapp
+```
+for at gå ind i mappen.

@@ -1,0 +1,104 @@
+---
+title: 'Før vi går i gang'
+metaTitle: 'BANKEHUSET - Nødvendige Programmer'
+description: 'Dokumentation til Bankehuset Vand Temperatur måler, og guide til hvordan du kommer hurtigst i gang.'
+---
+
+## Nødvendige programmer
+Ud over diverse nødvendige programmer, er det vigtigt at før vi går i gang, at have *in mente* at BANKEHUSET er et ikke-kommercielt projekt. Er der noget der ikke virker, eller noget der står forkert, er det ikke for at være nederen - det kan være en fejl, forældet information eller hvad ved jeg!ææ 
+Med det af vejen kan vi gå i krig med dependencies. Hele projektet kræver nogle forskellige programmer til at redigere i filer, bygge web app'en, og compile firmwaren. Herunder er er alle nødvendige programmer, og hvordan man installere dem på hhv. Mac, Linux og Windows. Alle øvrige guides tager udgangspunkt i at du har disse *dependencies*.
+
+## Webapp-specifikke 
+Disse programmer installeres på serveren hvor webapp'en skal hostes. \**Build essentials* er i anførselstegn, da det er et ubuntu-specifikt navn, der mere eller mindre er blevet *de facto* kaldenavnet til "grundpakker" til at compile fx C++ kode med. Det er selvom de har forskellige navne på tværs af nærmest alle systemer. Ud over disse skal du også bruge en tekseditor du føler dig komfortabel i. Om det er `nano`, `vi` eller `nvim` er op til dig, dog tager øvrige guides udgangspunkt i Neovim, og er ligeledes hvorfor den installeres i en kommando for sig, da den således sagtens kan undlades.
+
+[`git`](https://git-scm.com/) [`docker`](https://docker.com) [`"build-essentials"`](https://pimylifeup.com/ubuntu-build-essential/) [`nginx`](https://www.nginx.com/) [`pm2`](https://pm2.keymetrics.io/)
+
+### Installering
+
+### Oracle Linux/CentOS/Fedora
+```bash title=WebApp/Dependencies  lineNumbers=true
+sudo yum install git docker nginx pm2 -y
+sudo yum groupinstall 'Development Tools' -y
+sudo yum install neovim 
+```
+
+### Ubuntu servers
+```bash title=Webapp/Dependencies
+sudo apt install git docker build-essentials nginx pm2 -y
+```
+
+### Arch systems
+Kører du btw. arch behøves jeg nok ikke fortælle at pacman selvfølgeligt sagtens kan skiftes ud med både paru, yaourt og lign. *AUR helpers*/package managers. Men jeg gætter på du har disse installeret allerede, såeh. 🤷
+```bash title=Webapp/Dependencies
+sudo pacman -S git docker base-devel nginx pm2
+```
+
+## bankehuset.cpp - Firmware med Platformio / Arduino 
+Platformio er et udviklingsmiljø til microcontrollers. Det gør det blandt andet, at udvikle vores firmware kode via VSCode, og Arduino's egen sparsomme IDE således kun er nødvendig til at installere øvrige biblioteker når koden skal compiles. Disse **installeres lokalt** på den PC du udvikler på, og vil flashe din NodeMCU/ESP8266 med.
+
+`python3` `python3-pip` `code` `arduino` `platformio`
+
+### Arch linux
+```bash title=Arduino-Platformio/Dependencies
+sudo pacman -S python3 python3-pip code arduino
+pip install platformio
+```
+### Ubuntu Linux
+```bash title=Arduino-Platformio/Dependencies
+# Opdatere de seneste mirrors
+sudo apt update 
+# Installere dependencies, til at downloade `code`
+sudo apt install software-properties-common apt-transport-https wget -y
+# Hente Microsofts GPG key og tilføje den til `apt`
+wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add
+# Tilføje Microsofts VSCode Repo
+sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+#Installer alle nødvendige programmer
+sudo apt install -y python3 python3-pip code arduino
+pip3 install platformio
+```
+
+### MacOS
+Ligesom med Ubuntu er der lidt ekstra skridt der skal tages med MacOS, før det er rigtigt nemt. De ekstra trin er kun nødvendige hvis du ikke i forvejen har [`homebrew`](https://brew.sh) og [`xcode`](https://developer.apple.com/xcode/), [`Command Line Tools`](https://developer.apple.com/downloads/)  eller [`osx-gcc-installer`](https://github.com/kennethreitz/osx-gcc-installer#readme). Vi vælger i øvrigt `Command Line Tools`, da Apple har tilføjet en nem kommando til at få fingre i deres compiler..
+
+```bash title=Arduino-Platformio/Dependencies
+# Installer "Command Line Tools" gcc compiler
+xcode-select --install
+# Installer Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+# Tilføj brew til din PATH - via ~/.profile
+echo "export PATH=\"/usr/local/opt/python/libexec/bin:$PATH\"" >> ~/.profile
+# Installer python, pip 
+brew install python 
+# Installer code og arduino
+brew install --cask visual-studio-code arduino
+#Installer platformio
+pip3 install platformio
+```
+
+#### Windows 10 (moderne)/Windows 11
+Microsoft lavede for ikke sindssygt lang tid siden deres egen package manager på ligefod med brew, apt og pacman; [WinGet](https://docs.microsoft.com/en-us/windows/package-manager/winget/). Det er derfor guiden her skriver "moderne" i parantes efter Windows 10 - WinGet blev nemlig tilføjet som en del af en Windows 10 update. Er dit system opdateret, har du helt sikkert winget. Åben et Powershell vindue og skriv winget, og tryk enter. Hvis ikke, så følg linket ovenfor, der går installeringen igennem, også uden at opdatere, hvis du skulle være imod dét.
+
+```bash title=Arduino-Platformio/Dependencies
+# Installer Python og Pip
+winget install -e --id Python.Python.3
+# Installer VSCode
+winget install -e --id Microsoft.VisualStudioCode
+# Installer Arduino
+winget install -e --id ArduinoSA.IDE.beta
+python3 -m pip install platformio 
+```
+
+#### For alle typer systemer
+![PlatformIO i Vscode Udvidelses Manager](../../src/platformio-ide-vscode.png)
+I Vscode skal vi til sidst have installeret PlatformIO's VSCode udvidelse, der gør det hele lidt nemmere:
+1. Åben VSCode's Udvidelses Manager
+2. Søg efter den officielle PlatformIO IDE udvidelse
+3. Installer PlatformIO
+
+For mere dybdegående om PlatformIO se: https://docs.platformio.org/en/latest/integration/ide/vscode.html#quick-start
+
+## Version 13ProMax (PCB Design)
+Installeres også lokalt. Ud over kicad som er nævnt, kan et hvert billedebehandlingsprogram også være praktisk, men det er kun hvis du vil ændre selve grafikken på silkscreen laget. 
+
+`kicad` 

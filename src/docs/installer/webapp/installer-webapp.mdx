@@ -1,0 +1,21 @@
+---
+title: 'Installer BANKEHUSET Webapp'
+---
+
+## Yarn, Gatsby, NPM...
+Man har lyst til at sige kært barn har mange navne, men det er jo forskellige programmer, og måder at installere ting på.
+
+Når du er i selve projektets mappe `~/Projekter/bankehuset-webapp` kan du installere de nødvendige libraries til at 
+Her bruger vi npm til at installere yarn:
+```bash
+npm i -g yarn
+```
+
+og kan derefter nemt build webapp'en med:
+```
+yarn develop
+```
+
+Og det her er én af de dér gotcha's jeg talte om, ved ARM64 vs. x64. Jeg kunne simpelthen ikke få siden til at build, da den brokkede sig over et unmet dependency iform af @parcel/watcher, som ellers sagtens kunne installeres både globalt og lokalt i projektmappen, men den brokkede sig uanset, når jeg prøvede at køre en `develop` eller `build` kommando.
+
+Så ja, det er derfor jeg bruger den ene library package manager til at installere den anden.

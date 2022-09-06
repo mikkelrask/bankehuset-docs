@@ -1,22 +1,39 @@
 # Sidebar navigation
 
-- label: 'Introduction'
-  link: '/'
-- label: 'Getting started'
-  link: '/getting-started'
-- label: Usage
+- label: 'Introduktion'
+  link: '/introduktion'
+- label: 'Før vi går i gang'
+  link: '/dependencies'
+- label: Installer
   items:
-    - label: 'Creating docs'
-      link: '/usage/creating-docs'
-    - label: 'Navigation'
-      link: '/usage/navigation'
-    - label: 'Shadowing'
-      link: '/usage/shadowing'
-    - label: 'Using YAML files'
+    - label: 'Bankehuset Webapp'
+      items:
+          - label: 'Fork og Klon Github Repo'
+            link: 'installer/webapp/fork-n-clone'
+      link: 'installer/webapp'
+    - label: 'Bankehuset Firmware'
+      link: '/installer/arduino-platformio'
+    - label: 'Bankehuset v. 13 Pro Max (PCB)'
+      link: '/installer/13promax'
+    - label: 'Send (big) Data'
       link: '/usage/using-yaml-files'
-- label: More
+- label: Konfigurer
   items:
-    - label: FAQ
-      link: /faq
+    - label: Konfigurer webapp'en
+      link: configure/webapp
+    - label: MCU Firmware
+      link: configure/mcu-firmware
+    - label: PCB design (KiCad)
+      link: configure/pcb-design
+- label: Kør
+  items:
+    - label: Kør webapp'en
+      link: run/webapp
+    - label: Flash Firmware
+      link: flash/mcu
+- label: Mere
+  items:
     - label: 'Github'
-      link: https://github.com/jpedroschmitz/rocketdocs
+      link: https://github.com/mikkelrask/bankehuset
+    - label: 'Issues'
+      link: https://github.com/mikkelrask/bankehuset/issues 

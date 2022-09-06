@@ -1,0 +1,17 @@
+---
+title: "Installation"
+metaTitle: "Vand temperatur webUI og lokal vejrstation "
+metaDescription: "Komplet platformio projekt klar til at flashe på en hver ESP8266/NodeMCU. Bruger DS18B20U temperatur sensor."
+---
+
+Gennemgang af så godt som alle tænkelige aspekter af hvordan man deploy'er, flasher, builder, compiler og alle mulige andre seje ord ift at sætte BANKEHUSET op.
+
+Indholdsfortegnelse:
+1. [Før vi går i gang](../installation/1-dependencies) - Installering af nødvendige programmer, for at overhovedet komme i gang.
+2. [Installer NodeJS og NPM](../installation/1-dependencies/installer-nodejs-og-npm) (særskilt proces)
+2. [Lave en *fork* af BANKEHUSET Webapp github repo og klone den lokalt](../installation/2-webapp/1-fork-n-clone)
+2. Installering af web-app'en og gennemgang af de forskellige aspekter.
+3. Opsætning af MongoDB database via Docker - her lagrer vi temperatur, timestamp og øvrig vejrdata.
+4. Opsætning af reverse proxy med Nginx - vi skal fortælle vores http-server nginx hvad vi skal vise
+5. Oprette ingress/firewall undtagelser for port 80-443
+6. Domæne opsætning med DNS via Cloudflare

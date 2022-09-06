@@ -1,0 +1,82 @@
+---
+title: "Introduktion"
+metaTitle: "Vand temperatur webUI og lokal vejrstation "
+metaDescription: "Komplet platformio projekt klar til at flashe på en hver ESP8266/NodeMCU. Bruger DS18B20U temperatur sensor."
+---
+
+Bankehuset er et "cross platform" projekt - et *full stack* projekt hvis det skal være buzz-word'y - Et projekt hvor jeg i den grad har fået testet min tekniske kunnen og forståelse af ting, og for første gang har arbejdet med et decideret PrintedCircuitBoard design - et *PCB*. Alt jeg har produceret op indtil nu, her selvfølgeligt inklussiv prototypen af Bankehuset, er hvor jeg har kunne *cramme* shit ind i andet shit - en transistor og et relæ i en dørtelefon, en raspberry pi i et gammel NES game cartridge, en Pi ind i en gammel telefon der ligner en and, o.l. Prototypen af Bankehuset blev lavet ud af et dirt cheap amazon lydkort, hvor det hele lige var for perfekt til at ikke lade være. XLR portene havde de passende havde 3 ben, akkurat som DS18B20U sensoren har brug for, 12V indgangen kunne genbruges ved 5V, ligesom den indbyggede LED i lydkortet også blev "piggybacked" til formålet.
+
+Det her er med andre ord mit første "komplette produkt", så selvom det *bare* er en MCU chip, to push-buttons, input til temperatur sensor og et par LEDs, har det været et __virkeligt sjovt__ projekt, netop fordi det har involdveret alle led af produktdesign, *forender* og *bagsider* af alting inklussiv.
+
+Men... *circle back -* Bankehuset er .. et ***overengineered*** termometer, der tilfældigvis er vandtæt, har indbygget wifi *og* sin egen hjemmeside..
+
+Dens eneste formål er, at sidde på taget af min mor og hendes mands hus - *bankehuset* - hvor det hver 15. minut tager temperaturen på det vand de opsamler i nogle dertilindrettede PVC rør. Vandet bruges bl.a andet til deres udendørsbad, og termometeret er selvfølgeligt for at give dem en indikation om, om de skal tage bad udendørs i dag, eller om det er inde-bad der er *the way to go*.
+
+[Rasmus Wølk](https://github.com/rasmuswoelk) har været (og er generelt altid!) __uundværlig__ på alt hvad der har haft med port 80 til 443 at gøre, og gik hurtigt i krig helt af sig selv, hvor han startede med at sætte en webprojekt op via gatsby-cloud, med en free tier mongodb database ved siden af.
+
+Det gjorde at vi var **super** hurtigt i gang, og Rasmus *er* generelt bare skidehamrende god til at finde ud af præcist hvordan man får et projekt, til **også** at indeholde **React.**
+
+> *"Jeg tror jeg har en god boilerplate du vil kunne bruge til lige det her..!"* ✅ - Rasmus Wølk
+
+Ulempen på dette stadie viste sig hurtigt i form af sidens load tider (da det gratis mongo instance formodenligt var i dvale 99% af tiden), og på sigt ville vores gratis queries til databasen også hurtigt blive opbrugt, selv med data der kun bliver sendt hvert 15. minut, samt når siden requester den seneste data. Så selvfølgeligt var det ikke et react problem, men et "**gratis**" problem.
+
+## Enter Oracle Cloud Free Tier!
+
+"Gratis"-problem.. Og så alligevel! Gratis er ikke skidt - jeg havde nemlig i forvejen et *24GB Ram 4xAmpere ARM CPU* instance kørende hos [Oracle Cloud](https://cloud.oracle.com) - nærmere specifikt min minecraft server. Uden det på nogen måde skal handle om det, vil jeg bare sige at den er blandt de bedste minecraft servere (*Server URL: here2help.tmsgv.xyz btw!*) jeg nogensinde har connectet til. Den føles næsten som en lokal single player verden... *Gratis*..!
+
+NÅ! Men med den i baghånden kunne vi om ikke andet teste dét at have en lokal node app, en lokal mongodb, og en lokal http server til webUI'et. Her skal man lige minde sig selv om, at ARM CPU's ikke er ligeså godt understøttet som enhver x64/x86 arkitektur er, så der var lidt debugging/hacking i kiggerten, altsammen. Der var lidt bump i vejen, så at sige. NodeJS for mega forældet, og ingen nyere udgave var umiddelbart at finde i de officielle dnf/yum repos. Gatsby kunne ikke bare lige build projektet, Ingress regler/firewall regler skulle sættes korrekt op, ligesom at der heller ikke bare lige var nogen indbygget måde at automatisk build ved nye commits/push, som man er vant til fra hhv. Gatsby/Netlify og lignene services.
+
+Skal du selv rode med sådanne ting, så har jeg ud over de konkrete ting som kun er dokumenteret følgende i processen:
+
+1. ["Installer NodeJS (v18.8.0) på Oracle Linux/Oracle Cloud"](../oracle%20cloud/Installer%20NodeJS%20-Oracle%20Linux-Oracle%20Cloud.md?fileId=28531)
+2. ["Reverse proxy med nginx og NodeJS"](../oracle%20cloud/Reverse%20Proxy%20med%20nginx%20og%20NodeJS.md?fileId=28763)
+3. ["Åben for port 80-443 på Oracle Cloud"](../oracle%20cloud/%C3%85ben%20porte%20p%C3%A5%20Oracle%20Cloud.md?fileId=30738)
+4. ["Build ved deploy til production med Github Actions"](../oracle%20cloud/Automatisk%20build%20via%20Github%20Actions.md?fileId=31413)
+
+Men er du helt oven på dét at bygge en webapp, flashe custom compiled firmware på en MCU eller mestrer du PCB design, er det selvfølgeligt bare at `git clone https://github.com/mikkelrask/bankehuset` og hacke derud af! I så tilfælde så drop dokumentationen her, det meste er ret straight forward.
+## Bankehuset består således af:
+
+* [**bankehuset-webapp**](https://github.com/mikkelrask/bankehuset-webapp) **(gatsby/react app + nodeJS backend + mongo database)**
+  * Er hostet på Oracle Cloud via Oracle Linux, pm2, nginx, docker, nodejs, mongodb, yarn, gatsby, react
+  * Served på [bankehuset.info](http://bankehuset.info)
+  * WebUI for bruger (GatsbyJS+React), og API endpoint (NodeJS + MongoDB), som den fysiske enhed sender de målte temperatur data til
+  * Benytter openweathermap API til at også vise det lokale vejr data, så vandtemperaturen ikke står alene. Also grafer n'such probably-maybe🤷
+* **bankehuset.cpp (**[**platform.io**](http://platform.io) **project)**
+  * C++ firmware compiled med gcc til ESP8266 NodeMCU .
+  * **Libraries**:
+    * ESP8266HTTPClient.h
+    * Arduino.h
+    * OneWire.h
+    * DallasTemperature.h
+    * WiFiManager.h
+    * WiFiClientSecure.h
+  * Ved første boot tændes *cofig led* og `wifimanager.h` køres. (eller hvis man har trykket på "Config" knappen)
+  * Når `wifimanager.h` kører opretter NodeMCU D1 Mini sit eget accesspoint med navnet `BankehusetAP`.
+  * Tilslutter man til det, vil man hurtigt blive præsenteret for konfigurationsportalen på <http://192.168.4.1> hvor man kan indstille hvilket Wifi Bankehuset skal køre via.
+  * Kommer enheden ikke online inden for n sekunder modtager den timeout, genstarter og starter BankehusetAP igen.
+  * Gennemføres wifimanager setup, uden at tilslutte til noget wifi, vil enheden køre via sit eget wifi, og målingerne vil således kun kunne ses via serial connection (USB til PC)
+  * Var Wifi forbindelsen successfuld, slukkes *config led*, og nu tændes *status led* imens bankehuset tager 12 temperatur målinger og sender medianen til [bankehuset.info/api/collect](http://bankehuset.info/api/collect) , slukker for *status led*, wifi og går i deepsleep i **900e6 µs** - som alle jo ved er præcist det samme som 15 minutter 🤷
+* **Bankehuset SE ( fysisk prototype)**
+  * 1 x NodeMCU D1 Mini (flashed med bankehuset.cpp)
+  * 2 x push buttons
+  * 3 x 2mm LEDs
+  * 1 x [DS18B20](datasheets/DS18B20.pdf?fileId=31057)-U
+  * 1 x 3 pin connector
+  * Randomass perfboard
+  * Project Box i form af et hus fra et billigt amazon lydkort
+  * Kan **alt** det samme som 13ProMax, men er hjemmelavet... Af mig...! Heraf navnet SE .
+  * ![image (2).png](.attachments.27004/image%20%282%29.png)
+* **Bankehuset v. 13ProMax (KiCad schematic and PCB design)**
+  * Man kan kalde det design-final-(final2).pcb hvis man vil. Men 13ProMax, fordi min mor ikke vil have det på andre måder. Tesen her er at det endelige produkt gerne skal føles lige så "umpf" som min mor føler når hun pakker sin iPhone 13 Pro Max ud 📱
+  * På PCB'en vil der på silkscreen laget være printet en QR kode der når scannes vil prøve at tilslutte til NodeMCU'ens Wifi `BankehusetAP` der selv automatisk åbner wifikonfigurations siden - tanken er her, at man kun er nær printpladen, når man indstiller det hele første gang, og enheden derfor med god sansynlighed vil broadcaste sit access point.
+  * Indeholder ekstra tilslutningsmulighed, hvis man vil udvide med en ekstra sensor.
+  * ![13promax.png](.attachments.27004/13promax.png)
+  * Deepsleep og de kun periodiske målinger gør det muligt for Bankehuset at operere 100% fra et lille solcellepanel, og spænding opbevaret på 1150mAh batteri, til tidspunkter uden sol, hvor den i deepsleep kun bruger \~20µA - tyve micro ampere.
+  * Hvor mange dage uden sol den vil kunne klare, er stadig uvis, men kapaciteten af batteriet er heldigvis nem at justere (læs: Løber den tør? Større batteri!).
+  * NodeMCU udskiftes med en ESP32-S3-WROOM-1U - dette er dels så vi kan benytte muligheden for ekstern antenne, som giver større rækkevidde på den lille selvkørende enhed.
+  * De tre LEDs vil udskiftes med én Neopixel LED, der signalerer forskellige ting via forskellige farver i stedet. Det er sjældent at man skal interagere med Bankehuset fysisk, men når endeligt man skal det er vigtigt at kunne tyde 100% hvilket mode den er i, for at vide hvordan man skal forvente den agerer.
+
+  ## Gotcha's
+Første gotcha er selvfølgeligt at dokumentationen her er specifikt lavet til at køre denne specifikke webapp på en ARM64 baseret Oracle Cloud/Oracle Linux server, og dine trin kan derfor meget vel variere. Den gode nyhed er, at på enhver "almindelig"/mere gængs server, er det meget mere lige til, og der findes utallige guides til de korrekte trin, som helt sikkert også er mere velskrevne end disse noter.
+
+Næste gotcha er netop dokumentationen og "udførelsen". Jeg har ikke tænkt mig at tale mig selv ned, men jeg er bevidst om at jeg langt fra nogen ekspert på nogle af de områder vi berører, så skriver jeg noget der er forkert, noget der ikke virker for dig, eller hvad ved jeg - *don't hate me*. Det her er et hyggeprojekt, hvor der er den her gigantiske dokumentation netop er til for at *jeg selv* kan finde hoved og hale i det, finde samme fremgangsmetode næste gang min NodeMCU dør, eller min server crasher, og håber bare at der er nogen kan drage nytte, at den information jeg lærer på min vej.
