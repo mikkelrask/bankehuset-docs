@@ -34,6 +34,11 @@
     "clean": "gatsby clean"
   },
   "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
     "*.{js,json,css,md,html}": [
       "prettier --single-quote --write",
       "git add"
