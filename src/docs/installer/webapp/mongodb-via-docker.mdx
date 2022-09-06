@@ -1,3 +1,52 @@
 ---
 title: 'Opsætning af MongoDB via Docker'
 ---
+Dataen som BANKEHUSET enheden måler sendes til vores server, og gemmes her i en MongoDB database.
+Her går vi igennem hvordan vi nemt sætter Mongo databasen op i et Docker instance, og sørger for at vores webapp kan connecte til den, og kaste data efter den.
+
+## Gør klar
+Først, hvis ikke du har én, laver vi en mappe til docker-relaterede ting. Min docker mappe er bare er i min home folder, og vi kan derfor oprette både docker mappen, samt en undermappe til Mongo med kommandoen: 
+```
+mkdir -p ~/docker/mongodb
+cd ~/docker/mongodb
+```
+
+I mappen skal vi have lavet vores `docker-compose.yml` fil. Den kan fx se således ud, men du må *meget gerne* prøve at være mere kreativ ift username og password, end jeg har i eksemplet her!
+```yml title="~/docker/mongodb/docker-compose.yml"
+version: '3.8'
+services:
+  mongo:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_DATABASE: bankehuset
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: '123456789'
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data_container:/data/db
+    restart:            # Stopper databasen vil vi altid forsøge at genstarte den,
+      - unless-stopped  # med mindre det er os selv, der aktivt stopper den.
+
+networks                # Vi bruger netværket bridge, da docker's typisk ellers har deres
+  internal:             # eget netværk, som ikke er tilgængeligt for ikke-docker-apps på systemet.
+    driver: bridge 
+
+volumes:
+  mongodb_data_container:
+```
+## Let's go!
+Og med og med en compose fil klar i `~/docker/mongodb/docker-compose.yml` kan vi starte vores database med:
+```
+docker-compose up -d --force-recreate
+```
+
+Her er det vigtigt at huske, at nogle systemer ikke har `docker-compose` som program/funktion, men i stedet som en underfunktion der køres i stedet `compose` som første argument til docker - så altså bare uden binde-stregen i mellem de to ord (`docker compose`)
+
+Får vi ingen fejl, skulle mongo være *gucci!*
+## Information til senere brug
+Når mongo kører skal vi have på et tidspunkt have fortalt webapp'en hvor databasen er, og hvilke credentials den skal benytte. Her kan vi benytte `localhost` som destination, fordi vi kørte mongo på `bridge` netværket. 
+Her er den her query god at have i baghånden:
+```
+mongodb://root:123456789@localhost:27017/bankehuset?authSource=admin
+```

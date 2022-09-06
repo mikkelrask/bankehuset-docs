@@ -1,0 +1,21 @@
+---
+title: 'Webapp Dashboard (NodeJS, MongoDB, Gatsby/React)'
+description: 'Introduktion til BANKEHUSET WebApp og hvordan man kommer hurtigst i gang.'
+---
+
+## Dashboard
+Web app'en er den del af BANKEHUSET man kommer til at have med at gøre til hverdag. Alt andet er tiltænkt som *"set and forget"*, og man skal fx kun have med den fysiske enhed at gøre, hvis den eks. løber tør for batteri grundet for lidt sol over en for lang periode. Firmwaret skal opdateres, hvis eks web-app'en får ny adresse eller nyt SSL certifikat, hvorfor vi også går igennem 
+
+### Men hvad er Web app'en?
+BANKEHUSET web app er et minimalt vejr dashboard. Det er klart at den fysiske enhed's hovedformål er at tage temperaturen på vandet, men i og med at web app'en eks også benytter openweathermap's API til at få det aktuelle lokale vejr, er selve web app'ens hoved formål at fungere som et komplet vejr dashboard, *der tilfældigvis bare også* inkluderer vandets temperatur, og om den anbefaler udendørs bad eller ej..
+
+### Screenshots
+.
+
+## Det vi går igennem:
+1. [Klone webapp repo](fork-n-clone/)
+2. [Opsætning af MongoDB via Docker](/installer/webapp/mongodb-via-docker)
+3. [Opsætning af reverse proxy til Nginx](reverse-proxy-med-nginx)
+4. [Opret Ingess/Firewall regler/Åbne port 80-443](ingres-firewall-regler)
+5. [Installere webapp'ens library dependencies](build-webapp)
+
